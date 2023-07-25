@@ -1,11 +1,11 @@
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
+const API_BASE_URL = 'https://wlm-database.onrender.com';
+// process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
 
 /**
  * Defines the default headers for these functions to work with `json-server`
  */
 const headers = new Headers();
-headers.append("Content-Type", "application/json");
+headers.append('Content-Type', 'application/json');
 
 /**
  * Fetch `json` from the specified URL and handle error status codes and ignore `AbortError`s
@@ -22,7 +22,7 @@ headers.append("Content-Type", "application/json");
  *  a promise that resolves to the `json` data or an error.
  *  If the response is not in the 200 - 399 range the promise is rejected.
  */
-async function fetchJson(url, options, onCancel) {
+async function fetchJson (url, options, onCancel) {
   try {
     const response = await fetch(url, options);
 
@@ -37,7 +37,7 @@ async function fetchJson(url, options, onCancel) {
     }
     return payload.data;
   } catch (error) {
-    if (error.name !== "AbortError") {
+    if (error.name !== 'AbortError') {
       console.error(error.stack);
       throw error;
     }
@@ -45,16 +45,16 @@ async function fetchJson(url, options, onCancel) {
   }
 }
 
-function populateReviews(signal) {
-  return async (movie) => {
+function populateReviews (signal) {
+  return async movie => {
     const url = `${API_BASE_URL}/movies/${movie.movie_id}/reviews`;
     movie.reviews = await fetchJson(url, { headers, signal }, []);
     return movie;
   };
 }
 
-function populateTheaters(signal) {
-  return async (movie) => {
+function populateTheaters (signal) {
+  return async movie => {
     const url = `${API_BASE_URL}/movies/${movie.movie_id}/theaters`;
     movie.theaters = await fetchJson(url, { headers, signal }, []);
     return movie;
@@ -66,10 +66,10 @@ function populateTheaters(signal) {
  * @returns {Promise<[movie]>}
  *  a promise that resolves to a possibly empty array of movies saved in the database.
  */
-export async function listMovies(signal) {
+export async function listMovies (signal) {
   const url = new URL(`${API_BASE_URL}/movies?is_showing=true`);
   const addReviews = populateReviews(signal);
-  return await fetchJson(url, { headers, signal }, []).then((movies) =>
+  return await fetchJson(url, { headers, signal }, []).then(movies =>
     Promise.all(movies.map(addReviews))
   );
 }
@@ -79,7 +79,7 @@ export async function listMovies(signal) {
  * @returns {Promise<[theater]>}
  *  a promise that resolves to a possibly empty array of theaters saved in the database.
  */
-export async function listTheaters(signal) {
+export async function listTheaters (signal) {
   const url = new URL(`${API_BASE_URL}/theaters`);
   return await fetchJson(url, { headers, signal }, []);
 }
@@ -89,7 +89,7 @@ export async function listTheaters(signal) {
  * @returns {Promise<[movie]>}
  *  a promise that resolves to a possibly empty array of movies saved in the database.
  */
-export async function readMovie(movieId, signal) {
+export async function readMovie (movieId, signal) {
   const url = new URL(`${API_BASE_URL}/movies/${movieId}`);
   const addReviews = populateReviews(signal);
   const addTheaters = populateTheaters(signal);
@@ -98,17 +98,17 @@ export async function readMovie(movieId, signal) {
     .then(addTheaters);
 }
 
-export async function deleteReview(reviewId) {
+export async function deleteReview (reviewId) {
   const url = `${API_BASE_URL}/reviews/${reviewId}`;
-  return await fetchJson(url, { method: "DELETE", headers }, {});
+  return await fetchJson(url, { method: 'DELETE', headers }, {});
 }
 
-export async function updateReview(reviewId, data) {
+export async function updateReview (reviewId, data) {
   const url = `${API_BASE_URL}/reviews/${reviewId}`;
   const options = {
-    method: "PUT",
+    method: 'PUT',
     headers,
-    body: JSON.stringify({ data }),
+    body: JSON.stringify({ data })
   };
   return await fetchJson(url, options, {});
 }
