@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://we-love-movies-pi.vercel.app/';
+const API_BASE_URL = 'https://wlm-database.onrender.com';
 // process.env.REACT_APP_API_BASE_URL || "http://localhost:5001";
 
 /**
